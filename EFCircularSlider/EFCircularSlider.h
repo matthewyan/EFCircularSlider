@@ -62,6 +62,11 @@ typedef enum : NSUInteger {
  */
 @property (nonatomic, strong) NSArray *innerMarkingLabels;
 
+/**
+ * NSArray of strings used to render labels at regular intervals out of the circle
+ */
+@property (nonatomic, strong) NSArray *outerMarkingLabels;
+
 
 #pragma mark - Visual Customisation
 /**

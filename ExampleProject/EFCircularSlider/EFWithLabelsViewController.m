@@ -28,11 +28,16 @@
 {
     [super viewDidLoad];
     
-    CGRect sliderFrame = CGRectMake(60, 150, 200, 200);
-    EFCircularSlider* circularSlider = [[EFCircularSlider alloc] initWithFrame:sliderFrame];
+    CGRect sliderFrame = CGRectMake(10, 100, 300, 300);
+    EFCircularSlider* circularSlider = [[EFCircularSlider alloc] initWithRadius:100];
+    circularSlider.frame = sliderFrame;
+    circularSlider.backgroundColor = [UIColor lightGrayColor];
     
     NSArray* labels = @[@"Beetle", @"Cow", @"Donkey", @"Eagle", @"Ant"];
     [circularSlider setInnerMarkingLabels:labels];
+    
+    NSArray *oLabels = @[@"American", @"China", @"England", @"French"];
+    [circularSlider setOuterMarkingLabels:oLabels];
     
     [self.view addSubview:circularSlider];
 }
