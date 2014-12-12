@@ -63,9 +63,10 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) NSArray *innerMarkingLabels;
 
 /**
- * NSArray of strings used to render labels at regular intervals out of the circle
+ * Show labels out of the circle
+ * Default vlaue is NO
  */
-@property (nonatomic, strong) NSArray *outerMarkingLabels;
+@property (nonatomic, assign) BOOL  outerLabels;
 
 
 #pragma mark - Visual Customisation

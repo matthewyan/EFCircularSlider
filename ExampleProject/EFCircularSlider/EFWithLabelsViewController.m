@@ -33,11 +33,11 @@
     circularSlider.frame = sliderFrame;
     circularSlider.backgroundColor = [UIColor lightGrayColor];
     
-    NSArray* labels = @[@"Beetle", @"Cow", @"Donkey", @"Eagle", @"Ant"];
+//    NSArray* labels = @[@"Beetle", @"Cow", @"Donkey", @"Eagle", @"Ant"];
+    NSArray *labels = @[@"播完当前", @"0", @"10", @"20", @"30", @"60"];
     [circularSlider setInnerMarkingLabels:labels];
-    
-    NSArray *oLabels = @[@"American", @"China", @"England", @"French"];
-    [circularSlider setOuterMarkingLabels:oLabels];
+    circularSlider.snapToLabels = YES;
+    circularSlider.outerLabels = YES;
     
     [self.view addSubview:circularSlider];
 }

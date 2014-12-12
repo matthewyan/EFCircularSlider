@@ -72,6 +72,7 @@ static const CGFloat kFitFrameRadius = -1.0;
     _handleType    = CircularSliderHandleTypeSemiTransparentWhiteCircle;
     _labelColor    = [UIColor redColor];
     _labelDisplacement = 0;
+    _outerLabels   = NO;
     
     _angleFromNorth = 0;
     
@@ -129,14 +130,6 @@ static const CGFloat kFitFrameRadius = -1.0;
     _innerMarkingLabels = innerMarkingLabels;
     [self setNeedsUpdateConstraints]; // This could affect intrinsic content size
     [self setNeedsDisplay]; // Need to redraw with new label texts
-}
-
-- (void)setOuterMarkingLabels:(NSArray *)outerMarkingLabels
-{
-    _outerMarkingLabels = outerMarkingLabels;
-    
-    [self setNeedsUpdateConstraints];
-    [self setNeedsDisplay];
 }
 
 -(void)setMinimumValue:(float)minimumValue
@@ -325,7 +318,6 @@ static const CGFloat kFitFrameRadius = -1.0;
     
     // Add the labels
     [self drawInnerLabels:ctx];
-    [self drawOuterLabels:ctx];
 }
 
 
@@ -479,7 +471,7 @@ static const CGFloat kFitFrameRadius = -1.0;
             // Enumerate through labels clockwise
             NSString* label = self.innerMarkingLabels[i];
             
-            CGRect labelFrame = [self contextCoordinatesForLabelAtIndex:i outer:NO];
+            CGRect labelFrame = [self contextCoordinatesForLabelAtIndex:i];
             
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0
             [label drawInRect:labelFrame withAttributes:attributes];
@@ -491,74 +483,30 @@ static const CGFloat kFitFrameRadius = -1.0;
     }
 }
 
-- (void)drawOuterLabels:(CGContextRef)ctx
+-(CGRect)contextCoordinatesForLabelAtIndex:(NSInteger)index
 {
-    NSInteger labelsCount = self.outerMarkingLabels.count;
-    if (labelsCount)
-    {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0
-        NSDictionary *attributes = @{ NSFontAttributeName: self.labelFont,
-                                      NSForegroundColorAttributeName: self.labelColor};
-#endif
-        for (int i = 0; i < labelsCount; i++)
-        {
-            // Enumerate through labels clockwise
-            NSString* label = self.outerMarkingLabels[i];
-            
-            CGRect labelFrame = [self contextCoordinatesForLabelAtIndex:i outer:YES];
-            
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0
-            [label drawInRect:labelFrame withAttributes:attributes];
-#else
-            [self.labelColor setFill];
-            [label drawInRect:labelFrame withFont:self.labelFont];
-#endif
-        }
-    }
-}
-
--(CGRect)contextCoordinatesForLabelAtIndex:(NSInteger)index outer:(BOOL)isOuter
-{
-    NSString *label = @"";
-    if (isOuter == NO) {
-        label = self.innerMarkingLabels[index];
-    }
-    else {
-        label = self.outerMarkingLabels[index];
-    }
+    NSString *label = self.innerMarkingLabels[index];
 
     // Determine how many degrees around the full circle this label should go
-    CGFloat percentageAlongCircle    = 0;
-    if (isOuter == NO) {
-        percentageAlongCircle = (index + 1) / (float)self.innerMarkingLabels.count;
-    }
-    else {
-        percentageAlongCircle = (index + 1) / (float)self.outerMarkingLabels.count;
-    }
+    CGFloat percentageAlongCircle = (index + 1) / (float)self.innerMarkingLabels.count;;
     
     CGFloat degreesFromNorthForLabel = percentageAlongCircle * 360;
     CGPoint pointOnCircle = [self pointOnCircleAtAngleFromNorth:degreesFromNorthForLabel];
     
     CGSize  labelSize        = [self sizeOfString:label withFont:self.labelFont];
-    CGPoint offsetFromCircle = [self offsetFromCircleForLabelAtIndex:index withSize:labelSize outer:isOuter];
+    CGPoint offsetFromCircle = [self offsetFromCircleForLabelAtIndex:index withSize:labelSize];
 
     return CGRectMake(pointOnCircle.x + offsetFromCircle.x, pointOnCircle.y + offsetFromCircle.y, labelSize.width, labelSize.height);
 }
 
--(CGPoint) offsetFromCircleForLabelAtIndex:(NSInteger)index withSize:(CGSize)labelSize outer:(BOOL)isOuter
+-(CGPoint) offsetFromCircleForLabelAtIndex:(NSInteger)index withSize:(CGSize)labelSize
 {
     // Determine how many degrees around the full circle this label should go
-    CGFloat percentageAlongCircle    = 0;
-    if (isOuter == NO) {
-        percentageAlongCircle = (index + 1) / (float)self.innerMarkingLabels.count;
-    }
-    else {
-        percentageAlongCircle = (index + 1) / (float)self.outerMarkingLabels.count;
-    }
+    CGFloat percentageAlongCircle    = (index + 1) / (float)self.innerMarkingLabels.count;;
     CGFloat degreesFromNorthForLabel = percentageAlongCircle * 360;
     
     CGFloat radialDistance = 0.0f;
-    if (isOuter == NO) {
+    if (self.outerLabels == NO) {
         radialDistance = self.innerLabelRadialDistanceFromCircumference + self.labelDisplacement;
     }
     else {
