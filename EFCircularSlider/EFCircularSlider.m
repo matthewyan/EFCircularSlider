@@ -14,7 +14,7 @@
 @interface EFCircularSlider ()
 
 @property (nonatomic) CGFloat radius;
-@property (nonatomic) int     angleFromNorth;
+@property (nonatomic) int     angleFromNorth;   // 变成以西边为原始坐标点
 @property (nonatomic, strong) NSMutableDictionary *labelsWithPercents;
 
 @property (nonatomic, readonly) CGFloat innerLabelRadialDistanceFromCircumference;
@@ -548,8 +548,6 @@ static const CGFloat kFitFrameRadius = -1.0;
     
     return CGPointMake(-labelSize.width * 0.5 + inwardOffset.x, -labelSize.height * 0.5 + inwardOffset.y);
 }
-
-
 
 #pragma mark - UIControl functions
 

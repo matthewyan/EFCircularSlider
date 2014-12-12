@@ -16,7 +16,7 @@
  *
  *  @return Radian Degrees in 'Compass' reference
  */
-#define CartesianToCompass(rad) ( rad + M_PI/2 )
+#define CartesianToCompass(rad) ( rad + M_PI )
 /**
  *  Macro for converting radian degrees from 'compass style' reference (0 radians is along Y axis (ie North on a compass))
  *   to cartesian reference (0 radians is along X axis).
@@ -25,7 +25,7 @@
  *
  *  @return Radian Degrees in Cartesian reference
  */
-#define CompassToCartesian(rad) ( rad - M_PI/2 )
+#define CompassToCartesian(rad) ( rad - M_PI )
 #define ToRad(deg) 		( (M_PI * (deg)) / 180.0 )
 #define ToDeg(rad)		( (180.0 * (rad)) / M_PI )
 #define SQR(x)			( (x) * (x) )

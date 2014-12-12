@@ -44,8 +44,14 @@
     circularSlider.handleWidth = 15.0f;
     circularSlider.hideFillLine = YES;
     
-    circularSlider.startAngel = -90;
-    circularSlider.endAngel = 90;
+    circularSlider.unfilledColor = [UIColor colorWithRed:238/255.0f green:238/255.0f blue:238/255.0f alpha:1.0f];
+    circularSlider.handleColor = [UIColor colorWithRed:1.0f green:115/255.0f blue:0 alpha:1.0f];
+    circularSlider.labelColor = [UIColor blackColor];
+    circularSlider.labelFont = [UIFont systemFontOfSize:14.0f];
+    circularSlider.lineWidth = 3.0f;
+    
+    circularSlider.startAngel = 0;
+    circularSlider.endAngel = 225;
     
     [self.view addSubview:circularSlider];
 }
