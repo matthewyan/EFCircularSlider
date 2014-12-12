@@ -48,6 +48,9 @@ typedef enum : NSUInteger {
  */
 @property (nonatomic) float currentValue;
 
+// 有效的起始位置
+@property (nonatomic) float startAngel; // 角度
+@property (nonatomic) float endAngel;
 
 #pragma mark - Labels
 /**
@@ -116,5 +119,10 @@ typedef enum : NSUInteger {
  * custom handle width
  */
 @property (nonatomic) CGFloat handleWidth;
+
+/**
+ * Default Value is NO
+ */
+@property (nonatomic) BOOL    hideFillLine;
 
 @end

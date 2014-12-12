@@ -34,7 +34,7 @@
     circularSlider.backgroundColor = [UIColor lightGrayColor];
     
 //    NSArray* labels = @[@"Beetle", @"Cow", @"Donkey", @"Eagle", @"Ant"];
-    NSArray *labels = @[@"播完当前", @"0", @"10", @"20", @"30", @"60"];
+    NSArray *labels = @[@"0", @"10", @"20", @"30", @"60", @"播完当前"];
     [circularSlider setInnerMarkingLabels:labels];
     circularSlider.snapToLabels = YES;
     circularSlider.outerLabels = YES;
@@ -42,6 +42,10 @@
     circularSlider.handleType = CircularSliderHandleTypeBigCircle;
     circularSlider.handleOffset = -15.0f;
     circularSlider.handleWidth = 15.0f;
+    circularSlider.hideFillLine = YES;
+    
+    circularSlider.startAngel = -90;
+    circularSlider.endAngel = 90;
     
     [self.view addSubview:circularSlider];
 }

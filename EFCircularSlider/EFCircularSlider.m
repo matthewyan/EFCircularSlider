@@ -73,8 +73,11 @@ static const CGFloat kFitFrameRadius = -1.0;
     _labelDisplacement = 0;
     _outerLabels   = NO;
     _handleOffset  = 0;
+    _hideFillLine  = NO;
     
     _angleFromNorth = 0;
+    _startAngel = 0;
+    _endAngel = 360;
     
     self.backgroundColor = [UIColor clearColor];
 }
@@ -132,6 +135,18 @@ static const CGFloat kFitFrameRadius = -1.0;
     [self setNeedsDisplay]; // Need to redraw with new label texts
 }
 
+- (void)setHandleOffset:(CGFloat)handleOffset
+{
+    _handleOffset = handleOffset;
+    [self setNeedsDisplay];
+}
+
+- (void)setHideFillLine:(BOOL)hideFillLine
+{
+    _hideFillLine = hideFillLine;
+    [self setNeedsDisplay];
+}
+
 -(void)setMinimumValue:(float)minimumValue
 {
     _minimumValue = minimumValue;
@@ -142,6 +157,11 @@ static const CGFloat kFitFrameRadius = -1.0;
 {
     _maximumValue = maximumValue;
     [self setNeedsDisplay]; // Need to redraw with updated value range
+}
+
+- (CGFloat)angleScope
+{
+    return self.endAngel - self.startAngel;
 }
 
 /**
@@ -156,7 +176,7 @@ static const CGFloat kFitFrameRadius = -1.0;
               currentValue, self.minimumValue, self.maximumValue);
     
     // Update the angleFromNorth to match this newly set value
-    self.angleFromNorth = (currentValue * 360)/(self.maximumValue - self.minimumValue);
+    self.angleFromNorth = (currentValue * self.angleScope)/(self.maximumValue - self.minimumValue);
     [self sendActionsForControlEvents:UIControlEventValueChanged];
 }
 
@@ -182,7 +202,7 @@ static const CGFloat kFitFrameRadius = -1.0;
  */
 -(float) currentValue
 {
-    return (self.angleFromNorth * (self.maximumValue - self.minimumValue))/360.0f;
+    return (self.angleFromNorth * (self.maximumValue - self.minimumValue))/self.angleScope;
 }
 
 -(CGFloat) radius
@@ -371,14 +391,15 @@ static const CGFloat kFitFrameRadius = -1.0;
                             lineWidth:self.lineWidth];
 
     // Draw an unfilled arc up to the currently filled point
-    [self.filledColor set];
-    
-    [EFCircularTrig drawUnfilledArcInContext:ctx
-                                      center:self.centerPoint
-                                      radius:self.radius
-                                   lineWidth:self.lineWidth
-                          fromAngleFromNorth:0
-                            toAngleFromNorth:self.angleFromNorth];
+    if (self.hideFillLine == NO) {
+        [self.filledColor set];
+        [EFCircularTrig drawUnfilledArcInContext:ctx
+                                          center:self.centerPoint
+                                          radius:self.radius
+                                       lineWidth:self.lineWidth
+                              fromAngleFromNorth:0
+                                toAngleFromNorth:self.angleFromNorth];
+    }
 }
 
 -(void) drawHandle:(CGContextRef)ctx{
@@ -493,9 +514,11 @@ static const CGFloat kFitFrameRadius = -1.0;
     NSString *label = self.innerMarkingLabels[index];
 
     // Determine how many degrees around the full circle this label should go
-    CGFloat percentageAlongCircle = (index + 1) / (float)self.innerMarkingLabels.count;;
-    
-    CGFloat degreesFromNorthForLabel = percentageAlongCircle * 360;
+    CGFloat percentageAlongCircle = 0;
+    if (self.innerMarkingLabels.count > 1) {
+        percentageAlongCircle = index / (float)(self.innerMarkingLabels.count-1);
+    }
+    CGFloat degreesFromNorthForLabel = percentageAlongCircle * self.angleScope;
     CGPoint pointOnCircle = [self pointOnCircleAtAngleFromNorth:degreesFromNorthForLabel];
     
     CGSize  labelSize        = [self sizeOfString:label withFont:self.labelFont];
@@ -507,8 +530,11 @@ static const CGFloat kFitFrameRadius = -1.0;
 -(CGPoint) offsetFromCircleForLabelAtIndex:(NSInteger)index withSize:(CGSize)labelSize
 {
     // Determine how many degrees around the full circle this label should go
-    CGFloat percentageAlongCircle    = (index + 1) / (float)self.innerMarkingLabels.count;;
-    CGFloat degreesFromNorthForLabel = percentageAlongCircle * 360;
+    CGFloat percentageAlongCircle    = 0;
+    if (self.innerMarkingLabels.count > 1) {
+        percentageAlongCircle = index / (float)(self.innerMarkingLabels.count-1);
+    }
+    CGFloat degreesFromNorthForLabel = percentageAlongCircle * self.angleScope;
     
     CGFloat radialDistance = 0.0f;
     if (self.outerLabels == NO) {
@@ -544,13 +570,16 @@ static const CGFloat kFitFrameRadius = -1.0;
     if(self.snapToLabels && self.innerMarkingLabels != nil)
     {
         CGPoint bestGuessPoint = CGPointZero;
-        float minDist = 360;
+        float minDist = self.angleScope;
         NSUInteger labelsCount = self.innerMarkingLabels.count;
         
         for (int i = 0; i < labelsCount; i++)
         {
-            CGFloat percentageAlongCircle = i/(float)labelsCount;
-            CGFloat degreesForLabel       = percentageAlongCircle * 360;
+            CGFloat percentageAlongCircle = 0;
+            if (i > 0) {
+                percentageAlongCircle = i / (float)(labelsCount-1);
+            }
+            CGFloat degreesForLabel       = percentageAlongCircle * self.angleScope;
             if(abs(self.angleFromNorth - degreesForLabel) < minDist)
             {
                 minDist = abs(self.angleFromNorth - degreesForLabel);
