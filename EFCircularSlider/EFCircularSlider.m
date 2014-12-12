@@ -17,7 +17,6 @@
 @property (nonatomic) int     angleFromNorth;
 @property (nonatomic, strong) NSMutableDictionary *labelsWithPercents;
 
-@property (nonatomic, readonly) CGFloat handleWidth;
 @property (nonatomic, readonly) CGFloat innerLabelRadialDistanceFromCircumference;
 @property (nonatomic, readonly) CGPoint centerPoint;
 
@@ -73,6 +72,7 @@ static const CGFloat kFitFrameRadius = -1.0;
     _labelColor    = [UIColor redColor];
     _labelDisplacement = 0;
     _outerLabels   = NO;
+    _handleOffset  = 0;
     
     _angleFromNorth = 0;
     
@@ -233,6 +233,11 @@ static const CGFloat kFitFrameRadius = -1.0;
 
 -(CGFloat) handleWidth
 {
+    // 设置了宽度，就用这个宽度
+    if (_handleWidth > 0) {
+        return _handleWidth;
+    }
+    
     switch (self.handleType) {
         case CircularSliderHandleTypeSemiTransparentWhiteCircle:
         case CircularSliderHandleTypeSemiTransparentBlackCircle:
@@ -342,7 +347,7 @@ static const CGFloat kFitFrameRadius = -1.0;
 }
 
 - (BOOL)pointInsideHandle:(CGPoint)point withEvent:(UIEvent *)event {
-    CGPoint handleCenter = [self pointOnCircleAtAngleFromNorth:self.angleFromNorth];
+    CGPoint handleCenter = [self handlePointOnCircleAngelFromNorth:self.angleFromNorth];
     CGFloat handleRadius = MAX(self.handleWidth, 44.0) * 0.5;
     // Adhere to apple's design guidelines - avoid making touch targets smaller than 44 points
     
@@ -378,7 +383,7 @@ static const CGFloat kFitFrameRadius = -1.0;
 
 -(void) drawHandle:(CGContextRef)ctx{
     CGContextSaveGState(ctx);
-    CGPoint handleCenter = [self pointOnCircleAtAngleFromNorth:self.angleFromNorth];
+    CGPoint handleCenter = [self handlePointOnCircleAngelFromNorth:self.angleFromNorth];
     
     // Ensure that handle is drawn in the correct color
     [self.handleColor set];
@@ -549,7 +554,7 @@ static const CGFloat kFitFrameRadius = -1.0;
             if(abs(self.angleFromNorth - degreesForLabel) < minDist)
             {
                 minDist = abs(self.angleFromNorth - degreesForLabel);
-                bestGuessPoint = [self pointOnCircleAtAngleFromNorth:degreesForLabel];
+                bestGuessPoint = [self handlePointOnCircleAngelFromNorth:degreesForLabel];
             }
         }
         self.angleFromNorth = floor([EFCircularTrig angleRelativeToNorthFromPoint:self.centerPoint
@@ -580,6 +585,12 @@ static const CGFloat kFitFrameRadius = -1.0;
 -(CGPoint)pointOnCircleAtAngleFromNorth:(int)angleFromNorth
 {
     CGPoint offset = [EFCircularTrig  pointOnRadius:self.radius atAngleFromNorth:angleFromNorth];
+    return CGPointMake(self.centerPoint.x + offset.x, self.centerPoint.y + offset.y);
+}
+
+- (CGPoint)handlePointOnCircleAngelFromNorth:(int)angleFromNorth
+{
+    CGPoint offset = [EFCircularTrig  pointOnRadius:self.radius+self.handleOffset atAngleFromNorth:angleFromNorth];
     return CGPointMake(self.centerPoint.x + offset.x, self.centerPoint.y + offset.y);
 }
 

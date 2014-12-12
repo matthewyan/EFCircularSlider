@@ -107,4 +107,14 @@ typedef enum : NSUInteger {
  */
 @property (nonatomic) CircularSliderHandleType handleType;
 
+/**
+ * handle center offset (radius + handleOffset)
+ */
+@property (nonatomic) CGFloat handleOffset;
+
+/**
+ * custom handle width
+ */
+@property (nonatomic) CGFloat handleWidth;
+
 @end

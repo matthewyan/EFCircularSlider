@@ -39,6 +39,10 @@
     circularSlider.snapToLabels = YES;
     circularSlider.outerLabels = YES;
     
+    circularSlider.handleType = CircularSliderHandleTypeBigCircle;
+    circularSlider.handleOffset = -15.0f;
+    circularSlider.handleWidth = 15.0f;
+    
     [self.view addSubview:circularSlider];
 }
 
